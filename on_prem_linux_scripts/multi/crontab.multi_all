@@ -1,0 +1,12 @@
+0 19 * * 4 /home/dq/dqs/scheduling/scripts/runDQ_ANOMALY_V1_9_3rd_Thur.sh
+55 20 28-31 * * [ `/bin/date -d +1day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD.sh
+55 19 24-27 2,5,8,11 * [ `/bin/date -d +5day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD_SCO_YR.sh
+55 19 25-28 2,5,8,11 * [ `/bin/date -d +4day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD_SCO_4Q_back.sh
+55 19 26-29 2,5,8,11 * [ `/bin/date -d +3day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD_SCO_3Q_back.sh
+55 19 27-30 2,5,8,11 * [ `/bin/date -d +2day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD_SCO_2Q_back.sh
+55 19 28-31 2,5,8,11 * [ `/bin/date -d +1day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD_SCO_1Q_back.sh
+55 22 24-27 2,5,8,11 * [ `/bin/date -d +5day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD_OC_YR.sh
+55 22 25-28 2,5,8,11 * [ `/bin/date -d +4day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD_OC_4Q_back.sh
+55 22 26-29 2,5,8,11 * [ `/bin/date -d +3day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD_OC_3Q_back.sh
+55 22 27-30 2,5,8,11 * [ `/bin/date -d +2day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD_OC_2Q_back.sh
+55 22 28-31 2,5,8,11 * [ `/bin/date -d +1day +\%d` -eq 1 ] && /home/dq/dqs/scheduling/scripts/runDQ_SCORECARD_OC_1Q_back.sh

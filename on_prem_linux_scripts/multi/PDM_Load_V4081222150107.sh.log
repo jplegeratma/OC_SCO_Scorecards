@@ -1,0 +1,196 @@
+Info: (PDM_Load_V4.sh) Stopping any Workflows that were already running.
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:01:07 2022
+
+Connected to Integration Service: [int_serv_qa].
+Stopping workflow [wf_pdm_ufr]
+Waiting for workflow [wf_pdm_ufr] to complete
+ERROR: Cannot stop/abort workflow [id = 12387] [wf_pdm_ufr] (or a task instance under it), because the workflow is currently not running on this Integration Service.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:01:08 2022
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:01:08 2022
+
+Connected to Integration Service: [int_serv_qa].
+Stopping workflow [wf_pdm_provr_adr_stg]
+Waiting for workflow [wf_pdm_provr_adr_stg] to complete
+ERROR: Cannot stop/abort workflow [id = 17414] [wf_pdm_provr_adr_stg] (or a task instance under it), because the workflow is currently not running on this Integration Service.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:01:08 2022
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:01:08 2022
+
+Connected to Integration Service: [int_serv_qa].
+Stopping workflow [wf_PD_CIW_VENDOR_BUS_TYPE]
+Waiting for workflow [wf_PD_CIW_VENDOR_BUS_TYPE] to complete
+ERROR: Cannot stop/abort workflow [id = 12393] [wf_PD_CIW_VENDOR_BUS_TYPE] (or a task instance under it), because the workflow is currently not running on this Integration Service.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:01:08 2022
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:01:09 2022
+
+Connected to Integration Service: [int_serv_qa].
+Stopping workflow [wf_M_AP_Central_Expense_Detail]
+Waiting for workflow [wf_M_AP_Central_Expense_Detail] to complete
+ERROR: Cannot stop/abort workflow [id = 12389] [wf_M_AP_Central_Expense_Detail] (or a task instance under it), because the workflow is currently not running on this Integration Service.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:01:09 2022
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:01:09 2022
+
+Connected to Integration Service: [int_serv_qa].
+Stopping workflow [wf_M_AP_DISBURSEMENT_DETAIL]
+Waiting for workflow [wf_M_AP_DISBURSEMENT_DETAIL] to complete
+ERROR: Cannot stop/abort workflow [id = 13727] [wf_M_AP_DISBURSEMENT_DETAIL] (or a task instance under it), because the workflow is currently not running on this Integration Service.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:01:09 2022
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:01:09 2022
+
+Connected to Integration Service: [int_serv_qa].
+Stopping workflow [wf_M_AP_VENDOR_PAYMENTS]
+Waiting for workflow [wf_M_AP_VENDOR_PAYMENTS] to complete
+ERROR: Cannot stop/abort workflow [id = 13728] [wf_M_AP_VENDOR_PAYMENTS] (or a task instance under it), because the workflow is currently not running on this Integration Service.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:01:10 2022
+Info: (PDM_Load_V4.sh) Stop of currently running workflows done at: Fri Aug 12 15:01:10 EDT 2022 
+Info: (PDM_Load_V4.sh) Executing Workflow  - wf_pdm_ufr.
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:01:10 2022
+
+Connected to Integration Service: [int_serv_qa].
+Starting workflow [wf_pdm_ufr]
+Waiting for workflow [wf_pdm_ufr] to complete
+INFO: Workflow [wf_pdm_ufr]: Execution succeeded.
+Workflow wf_pdm_ufr with run instance name [] and run id [206993] started successfully.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:04:16 2022
+Info: (PDM_Load_V4.sh) wf_pdm_ufr Workflow completed at: Fri Aug 12 15:04:16 EDT 2022 
+Info: (PDM_Load_V4.sh) Executing Workflow  - wf_pdm_provr_adr_stg.
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:04:16 2022
+
+Connected to Integration Service: [int_serv_qa].
+Starting workflow [wf_pdm_provr_adr_stg]
+Waiting for workflow [wf_pdm_provr_adr_stg] to complete
+INFO: Workflow [wf_pdm_provr_adr_stg]: Execution succeeded.
+Workflow wf_pdm_provr_adr_stg with run instance name [] and run id [206996] started successfully.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:04:34 2022
+Info: (PDM_Load_V4.sh) wf_pdm_provr_adr_stg Workflow completed at: Fri Aug 12 15:04:34 EDT 2022 
+Info: (PDM_Load_V4.sh) Executing Workflow  - wf_PD_CIW_VENDOR_BUS_TYPE.
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:04:34 2022
+
+Connected to Integration Service: [int_serv_qa].
+Starting workflow [wf_PD_CIW_VENDOR_BUS_TYPE]
+Waiting for workflow [wf_PD_CIW_VENDOR_BUS_TYPE] to complete
+INFO: Workflow [wf_PD_CIW_VENDOR_BUS_TYPE]: Execution succeeded.
+Workflow wf_PD_CIW_VENDOR_BUS_TYPE with run instance name [] and run id [206997] started successfully.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:05:56 2022
+Info: (PDM_Load_V4.sh) wf_PD_CIW_VENDOR_BUS_TYPE Workflow completed at: Fri Aug 12 15:05:56 EDT 2022 
+Info: (PDM_Load_V4.sh) Executing Workflow  - wf_M_AP_DISBURSEMENT_DETAIL.
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:05:57 2022
+
+Connected to Integration Service: [int_serv_qa].
+Starting workflow [wf_M_AP_DISBURSEMENT_DETAIL]
+Waiting for workflow [wf_M_AP_DISBURSEMENT_DETAIL] to complete
+INFO: Workflow [wf_M_AP_DISBURSEMENT_DETAIL]: Execution succeeded.
+Workflow wf_M_AP_DISBURSEMENT_DETAIL with run instance name [] and run id [206998] started successfully.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:19:47 2022
+Info: (PDM_Load_V4.sh) wf_M_AP_DISBURSEMENT_DETAIL Workflow completed at: Fri Aug 12 15:19:47 EDT 2022 
+Info: (PDM_Load_V4.sh) Executing Workflow  - wf_M_AP_VENDOR_PAYMENTS.
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:19:47 2022
+
+Connected to Integration Service: [int_serv_qa].
+Starting workflow [wf_M_AP_VENDOR_PAYMENTS]
+Waiting for workflow [wf_M_AP_VENDOR_PAYMENTS] to complete
+INFO: Workflow [wf_M_AP_VENDOR_PAYMENTS]: Execution succeeded.
+Workflow wf_M_AP_VENDOR_PAYMENTS with run instance name [] and run id [206999] started successfully.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 15:26:19 2022
+Info: (PDM_Load_V4.sh) wf_M_AP_VENDOR_PAYMENTS Workflow completed at: Fri Aug 12 15:26:19 EDT 2022 
+Info: (PDM_Load_V4.sh) Executing Workflow  - wf_M_AP_Central_Expense_Detail.
+
+Informatica(r) PMCMD, version [10.2.0 HotFix2], build [1911.0401], LINUX 64-bit
+Copyright (c) 1993-2019 Informatica LLC. All Rights Reserved.
+See patents at https://www.informatica.com/legal/patents.html.
+
+Invoked at Fri Aug 12 15:26:19 2022
+
+Connected to Integration Service: [int_serv_qa].
+Starting workflow [wf_M_AP_Central_Expense_Detail]
+Waiting for workflow [wf_M_AP_Central_Expense_Detail] to complete
+INFO: Workflow [wf_M_AP_Central_Expense_Detail]: Execution succeeded.
+Workflow wf_M_AP_Central_Expense_Detail with run instance name [] and run id [207000] started successfully.
+Disconnecting from Integration Service
+
+Completed at Fri Aug 12 16:59:34 2022
+Info: (PDM_Load_V4.sh) wf_M_AP_Central_Expense_Detail Workflow completed at: Fri Aug 12 16:59:34 EDT 2022 
+Info: (PDM_Load_V4.sh) Truncating and inserting data into the tables that used to be views
+Info: (PDM_Load_V4.sh) starting PDM_PostETL_V2_0.sql at:  Fri Aug 12 16:59:34 EDT 2022
+Info: (PDM_Load_V4.sh) done PDM_PostETL_V2_0.sql at:  Fri Aug 12 17:01:11 EDT 2022
+Info: (PDM_Load_V4.sh) starting UpdtFincRatios.sql at:  Fri Aug 12 17:01:11 EDT 2022
+Info: (PDM_Load_V4.sh) done UpdtFincRatios.sql at:  Fri Aug 12 17:01:16 EDT 2022
+PDM Informatica Job completed successfully.
+Info: (PDM_Load_V4.sh) PDM Weekly Load -- Completed at: Fri Aug 12 17:01:16 EDT 2022 
+Info: (PDM_Load_V4.sh) Check out the log file:   
