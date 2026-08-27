@@ -348,16 +348,18 @@ create or replace view MHTEAM.DWDQ.INF_SC_OC_FAILS(
 
                                               CCI,
                                               NWI,
-                                              UCC
+                                              UCC,
+                                              MGI,
+                                              MHI
                                          FROM MHTEAM.DWDQ.INF_B_SC_STG_OC_REP_STEP2) s
                                       UNPIVOT 
                                         ( PCT FOR CDE_ENC_MCO 
-                                          IN (CCI, NWI, UCC))
+                                          IN (CCI, NWI, UCC, MGI, MHI ))
                                           )
                                           
 -- replaced by copilot                   ( (PCT)
 --                                              FOR CDE_ENC_MCO
---                                              IN (CCI, NWI, UCC)))
+--                                              IN (CCI, NWI, UCC, MGI, MHI)))
                         WHERE     PCT < BENCHMARK
                               -- APCD measures removed per Nicole Tibbetts from meeting on Tue 7/12/2022
                               AND MEASURE NOT IN
@@ -441,6 +443,55 @@ create or replace view MHTEAM.DWDQ.INF_SC_OC_PROVIDER_MISS_IDS_UCC(
                      B_RNK,
                      P_RUN_DATE,
                      P_RNK);
+
+create or replace view MHTEAM.DWDQ.INF_SC_OC_PROVIDER_MISS_IDS_MGI(
+	S_RUN_DATE,
+	S_PROV_ID,
+	B_RUN_DATE,
+	B_PROV_ID,
+	P_RUN_DATE,
+	P_PROV_ID
+) as
+    SELECT S_RUN_DATE,
+           S_PROV_ID,
+           B_RUN_DATE,
+           B_PROV_ID,
+           P_RUN_DATE,
+           P_PROV_ID
+      FROM (  SELECT *
+                FROM MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER_MISSING_IDS
+               WHERE (S_MCO = 'MGI' OR B_MCO = 'MGI' OR P_MCO = 'MGI')
+            ORDER BY S_RUN_DATE,
+                     S_RNK,
+                     B_RUN_DATE,
+                     B_RNK,
+                     P_RUN_DATE,
+                     P_RNK);
+
+create or replace view MHTEAM.DWDQ.INF_SC_OC_PROVIDER_MISS_IDS_MHI(
+	S_RUN_DATE,
+	S_PROV_ID,
+	B_RUN_DATE,
+	B_PROV_ID,
+	P_RUN_DATE,
+	P_PROV_ID
+) as
+    SELECT S_RUN_DATE,
+           S_PROV_ID,
+           B_RUN_DATE,
+           B_PROV_ID,
+           P_RUN_DATE,
+           P_PROV_ID
+      FROM (  SELECT *
+                FROM MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER_MISSING_IDS
+               WHERE (S_MCO = 'MHI' OR B_MCO = 'MHI' OR P_MCO = 'MHI')
+            ORDER BY S_RUN_DATE,
+                     S_RNK,
+                     B_RUN_DATE,
+                     B_RNK,
+                     P_RUN_DATE,
+                     P_RNK);
+
 
 create or replace view MHTEAM.DWDQ.INF_SC_OC_PROVIDER_STATS(
 	VAL1,
@@ -578,7 +629,11 @@ create or replace view MHTEAM.DWDQ.INF_SC_OC_REPORT(
 	NWI,
 	NWI_DENOM,
 	UCC,
-	UCC_DENOM
+	UCC_DENOM,
+    MGI,
+    MGI_DENOM,
+    MHI,
+    MHI_DENOM
 ) as
     SELECT RUN_DATE,
            MEASURE,
@@ -589,7 +644,11 @@ create or replace view MHTEAM.DWDQ.INF_SC_OC_REPORT(
            NWI,
            NWI_DENOM,
            UCC,
-           UCC_DENOM
+           UCC_DENOM,
+           MGI,
+           MGI_DENOM,
+           MHI,
+           MHI_DENOM
       FROM MHTEAM.DWDQ.INF_B_SC_STG_OC_REP_STEP2
      -- APCD measures removed per Nicole Tibbetts from meeting on Tue 7/12/2022
      WHERE MEASURE NOT IN

@@ -351,18 +351,19 @@ create or replace view MHTEAM.DWDQ.INF_SC_SCO_FAILS(
                                               NAV,
                                               SWH,
                                               TFT,
-                                              UHC
+                                              UHC,
+                                              MGS
                                          FROM MHTEAM.DWDQ.INF_B_SC_STG_SCO_REP_STEP2) s
 
                                       UNPIVOT 
                                         ( PCT FOR CDE_ENC_MCO 
-                                          IN (BHP, CCA, NAV, SWH, TFT, UHC))
+                                          IN (BHP, CCA, NAV, SWH, TFT, UHC, MGS))
                                           )
 
 
 -- replaced by copilot                          UNPIVOT ( (PCT)
 --                                              FOR CDE_ENC_MCO
---                                              IN (BHP, CCA, NAV, SWH, TFT, UHC)))
+--                                              IN (BHP, CCA, NAV, SWH, TFT, UHC, MGS)))
                         WHERE     PCT < BENCHMARK
                               -- APCD measures removed per Nicole Tibbetts from meeting on Tue 7/12/2022
                               AND MEASURE NOT IN
@@ -389,22 +390,15 @@ create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_BHP(
            B_PROV_ID,
            P_RUN_DATE,
            P_PROV_ID
-      --select *
       FROM (  SELECT *
                 FROM MHTEAM.DWDQ.INF_B_SC_STG_SCO_PROVIDER_MISSING_IDS
-               --WHERE (S_MCO = 'UHC' OR B_MCO = 'UHC' OR P_MCO = 'UHC')
-               --WHERE (S_MCO = 'CCA' OR B_MCO = 'CCA' OR P_MCO = 'CCA')
-               --WHERE (S_MCO = 'NAV' OR B_MCO = 'NAV' OR P_MCO = 'NAV')
-               --WHERE (S_MCO = 'SWH' OR B_MCO = 'SWH' OR P_MCO = 'SWH')
-               --WHERE (S_MCO = 'TFT' OR B_MCO = 'TFT' OR P_MCO = 'TFT')
-               WHERE (S_MCO = 'BHP' OR B_MCO = 'BHP' OR P_MCO = 'BHP')
+                WHERE (S_MCO = 'BHP' OR B_MCO = 'BHP' OR P_MCO = 'BHP')
             ORDER BY S_RUN_DATE,
                      S_RNK,
                      B_RUN_DATE,
                      B_RNK,
                      P_RUN_DATE,
                      P_RNK)
---WHERE ROWNUM < 101
 ;
 
 create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_CCA(
@@ -421,22 +415,15 @@ create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_CCA(
            B_PROV_ID,
            P_RUN_DATE,
            P_PROV_ID
-      --select *
       FROM (  SELECT *
                 FROM MHTEAM.DWDQ.INF_B_SC_STG_SCO_PROVIDER_MISSING_IDS
-               --WHERE (S_MCO = 'UHC' OR B_MCO = 'UHC' OR P_MCO = 'UHC')
-               WHERE (S_MCO = 'CCA' OR B_MCO = 'CCA' OR P_MCO = 'CCA')
-            --WHERE (S_MCO = 'NAV' OR B_MCO = 'NAV' OR P_MCO = 'NAV')
-            --WHERE (S_MCO = 'SWH' OR B_MCO = 'SWH' OR P_MCO = 'SWH')
-            --WHERE (S_MCO = 'TFT' OR B_MCO = 'TFT' OR P_MCO = 'TFT')
-            --WHERE (S_MCO = 'BHP' OR B_MCO = 'BHP' OR P_MCO = 'BHP')
+                WHERE (S_MCO = 'CCA' OR B_MCO = 'CCA' OR P_MCO = 'CCA')
             ORDER BY S_RUN_DATE,
                      S_RNK,
                      B_RUN_DATE,
                      B_RNK,
                      P_RUN_DATE,
                      P_RNK)
---WHERE ROWNUM < 101
 ;
 
 create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_NAV(
@@ -453,22 +440,15 @@ create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_NAV(
            B_PROV_ID,
            P_RUN_DATE,
            P_PROV_ID
-      --select *
       FROM (  SELECT *
                 FROM MHTEAM.DWDQ.INF_B_SC_STG_SCO_PROVIDER_MISSING_IDS
-               --WHERE (S_MCO = 'UHC' OR B_MCO = 'UHC' OR P_MCO = 'UHC')
-               --WHERE (S_MCO = 'CCA' OR B_MCO = 'CCA' OR P_MCO = 'CCA')
-               WHERE (S_MCO = 'NAV' OR B_MCO = 'NAV' OR P_MCO = 'NAV')
-            --WHERE (S_MCO = 'SWH' OR B_MCO = 'SWH' OR P_MCO = 'SWH')
-            --WHERE (S_MCO = 'TFT' OR B_MCO = 'TFT' OR P_MCO = 'TFT')
-            --WHERE (S_MCO = 'BHP' OR B_MCO = 'BHP' OR P_MCO = 'BHP')
+                WHERE (S_MCO = 'NAV' OR B_MCO = 'NAV' OR P_MCO = 'NAV')
             ORDER BY S_RUN_DATE,
                      S_RNK,
                      B_RUN_DATE,
                      B_RNK,
                      P_RUN_DATE,
                      P_RNK)
---WHERE ROWNUM < 101
 ;
 
 create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_SWH(
@@ -485,22 +465,15 @@ create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_SWH(
            B_PROV_ID,
            P_RUN_DATE,
            P_PROV_ID
-      --select *
       FROM (  SELECT *
                 FROM MHTEAM.DWDQ.INF_B_SC_STG_SCO_PROVIDER_MISSING_IDS
-               --WHERE (S_MCO = 'UHC' OR B_MCO = 'UHC' OR P_MCO = 'UHC')
-               --WHERE (S_MCO = 'CCA' OR B_MCO = 'CCA' OR P_MCO = 'CCA')
-               --WHERE (S_MCO = 'NAV' OR B_MCO = 'NAV' OR P_MCO = 'NAV')
-               WHERE (S_MCO = 'SWH' OR B_MCO = 'SWH' OR P_MCO = 'SWH')
-            --WHERE (S_MCO = 'TFT' OR B_MCO = 'TFT' OR P_MCO = 'TFT')
-            --WHERE (S_MCO = 'BHP' OR B_MCO = 'BHP' OR P_MCO = 'BHP')
+                WHERE (S_MCO = 'SWH' OR B_MCO = 'SWH' OR P_MCO = 'SWH')
             ORDER BY S_RUN_DATE,
                      S_RNK,
                      B_RUN_DATE,
                      B_RNK,
                      P_RUN_DATE,
                      P_RNK)
---WHERE ROWNUM < 101
 ;
 
 create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_TFT(
@@ -517,22 +490,15 @@ create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_TFT(
            B_PROV_ID,
            P_RUN_DATE,
            P_PROV_ID
-      --select *
       FROM (  SELECT *
                 FROM MHTEAM.DWDQ.INF_B_SC_STG_SCO_PROVIDER_MISSING_IDS
-               --WHERE (S_MCO = 'UHC' OR B_MCO = 'UHC' OR P_MCO = 'UHC')
-               --WHERE (S_MCO = 'CCA' OR B_MCO = 'CCA' OR P_MCO = 'CCA')
-               --WHERE (S_MCO = 'NAV' OR B_MCO = 'NAV' OR P_MCO = 'NAV')
-               --WHERE (S_MCO = 'SWH' OR B_MCO = 'SWH' OR P_MCO = 'SWH')
-               WHERE (S_MCO = 'TFT' OR B_MCO = 'TFT' OR P_MCO = 'TFT')
-            --WHERE (S_MCO = 'BHP' OR B_MCO = 'BHP' OR P_MCO = 'BHP')
+                WHERE (S_MCO = 'TFT' OR B_MCO = 'TFT' OR P_MCO = 'TFT')
             ORDER BY S_RUN_DATE,
                      S_RNK,
                      B_RUN_DATE,
                      B_RNK,
                      P_RUN_DATE,
                      P_RNK)
---WHERE ROWNUM < 101
 ;
 
 create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_UHC(
@@ -549,15 +515,33 @@ create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_UHC(
            B_PROV_ID,
            P_RUN_DATE,
            P_PROV_ID
-      --select *
       FROM (  SELECT *
                 FROM MHTEAM.DWDQ.INF_B_SC_STG_SCO_PROVIDER_MISSING_IDS
                WHERE (S_MCO = 'UHC' OR B_MCO = 'UHC' OR P_MCO = 'UHC')
-            --WHERE (S_MCO = 'CCA' OR B_MCO = 'CCA' OR P_MCO = 'CCA')
-            --WHERE (S_MCO = 'NAV' OR B_MCO = 'NAV' OR P_MCO = 'NAV')
-            --WHERE (S_MCO = 'SWH' OR B_MCO = 'SWH' OR P_MCO = 'SWH')
-            --WHERE (S_MCO = 'TFT' OR B_MCO = 'TFT' OR P_MCO = 'TFT')
-            --WHERE (S_MCO = 'BHP' OR B_MCO = 'BHP' OR P_MCO = 'BHP')
+            ORDER BY S_RUN_DATE,
+                     S_RNK,
+                     B_RUN_DATE,
+                     B_RNK,
+                     P_RUN_DATE,
+                     P_RNK);
+
+create or replace view MHTEAM.DWDQ.INF_SC_SCO_PROVIDER_MISS_IDS_MGS(
+	S_RUN_DATE,
+	S_PROV_ID,
+	B_RUN_DATE,
+	B_PROV_ID,
+	P_RUN_DATE,
+	P_PROV_ID
+) as
+    SELECT S_RUN_DATE,
+           S_PROV_ID,
+           B_RUN_DATE,
+           B_PROV_ID,
+           P_RUN_DATE,
+           P_PROV_ID
+      FROM (  SELECT *
+                FROM MHTEAM.DWDQ.INF_B_SC_STG_SCO_PROVIDER_MISSING_IDS
+               WHERE (S_MCO = 'MGS' OR B_MCO = 'MGS' OR P_MCO = 'MGS')
             ORDER BY S_RUN_DATE,
                      S_RNK,
                      B_RUN_DATE,
@@ -707,7 +691,9 @@ create or replace view MHTEAM.DWDQ.INF_SC_SCO_REPORT(
 	TFT,
 	TFT_DENOM,
 	UHC,
-	UHC_DENOM
+	UHC_DENOM,
+	MGS,
+	MGS_DENOM
 ) as
     SELECT RUN_DATE,
            MEASURE,
@@ -724,7 +710,9 @@ create or replace view MHTEAM.DWDQ.INF_SC_SCO_REPORT(
            TFT,
            TFT_DENOM,
            UHC,
-           UHC_DENOM
+           UHC_DENOM,
+           MGS,
+           MGS_DENOM
       FROM MHTEAM.DWDQ.INF_B_SC_STG_SCO_REP_STEP2
      -- APCD measures removed per Nicole Tibbetts from meeting on Tue 7/12/2022
      WHERE MEASURE NOT IN

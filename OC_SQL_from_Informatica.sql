@@ -149,7 +149,7 @@ AND  ENC.REMIT_THRU_DT = TO_DATE('99991231','YYYYMMDD')
 AND TO_DATE('~ASOFDT_output~','YYYYMMDD') BETWEEN ENC.WH_FROM_DT AND ENC.WH_THRU_DT 
 AND ENC.CDE_CLM_DISPOSITION <> 'V' 
 AND ENC.IND_OFFSET = 'N' 
-AND ENC.CDE_ENC_MCO IN ('CCI','NWI','UCC')
+AND ENC.CDE_ENC_MCO IN ('CCI','NWI','UCC','MGI','MHI')
 --LIMIT 100
 ;
 
@@ -1030,13 +1030,15 @@ AS
 SELECT MEAS, 
        "'CCI'" AS CCI, 
        "'NWI'" AS NWI,
-       "'UCC'" AS UCC
+       "'UCC'" AS UCC,
+       "'MGI'" AS MGI,
+       "'MHI'" AS MHI
 FROM (
     SELECT * FROM MHTEAM.DWDQ.INF_B_SC_OC_TRANSPOSE1_~MON~
     PIVOT
     (
         SUM(actuals)
-        FOR cde_enc_mco IN ('CCI','NWI','UCC')
+        FOR cde_enc_mco IN ('CCI','NWI','UCC','MGI','MHI')
     )
 )
 ORDER BY meas; 
@@ -1111,13 +1113,15 @@ AS
 SELECT MEAS AS CLAIM_COUNT, 
        "'CCI'" AS CCI, 
        "'NWI'" AS NWI,
-       "'UCC'" AS UCC
+       "'UCC'" AS UCC,
+       "'MGI'" AS MGI,
+       "'MHI'" AS MHI
 FROM (
     SELECT * FROM MHTEAM.DWDQ.INF_B_SC_OC_TRANSPOSE21_~MON~
     PIVOT
     (
         SUM(claim_count)
-        FOR cde_enc_mco IN ('CCI','NWI','UCC')
+        FOR cde_enc_mco IN ('CCI','NWI','UCC','MGI','MHI')
     )
 )
 ORDER BY meas;
@@ -1298,7 +1302,7 @@ when meas='PCT_PATIENT_STATUS' then 'TOT_INPT_OUTPT'
 when meas='PCT_DIAG_ADMIT' then 'TOT_INPAT_FILTER2'
 when meas='PCT_DISCHARGEDT' then 'TOT_INPAT_FILTER1'
 end as claim_count,
-CCI, NWI, UCC
+CCI, NWI, UCC, MGI, MHI
 from MHTEAM.DWDQ.INF_B_SC_OC_TRANSPOSE2_~MON~;
 
 create table MHTEAM.DWDQ.INF_B_SC_~PN~_REP_STEP2_~MON~ 
@@ -1310,11 +1314,564 @@ rp1.claimtype,
 rp1.benchmark,
 rp1.cci,rp2.cci  as cci_denom,
 rp1.nwi,rp2.nwi  as nwi_denom, 
-rp1.ucc,rp2.ucc  as ucc_denom
+rp1.ucc,rp2.ucc  as ucc_denom,
+rp1.mgi,rp2.mgi  as mgi_denom,
+rp1.mhi,rp2.mhi  as mhi_denom
 from MHTEAM.DWDQ.INF_B_SC_~PN~_REP_STEP1_~MON~ rp1 
 inner join MHTEAM.DWDQ.INF_B_SC_~PN~_TRANSPOSE22_~MON~ rp2 
 on rp1.claim_count=rp2.claim_count
 ORDER BY MEAS, CLAIMTYPE;
+
+--truncate table INF_B_SC_STG_SCO_TRANSPOSE1
+
+insert into MHTEAM.DWDQ.INF_B_SC_STG_~PN~_TRANSPOSE1
+select * from (
+select
+  CDE_ENC_MCO             ,
+  PCT_ID_MEDICAID         ,
+  PCT_DOS_FROM            ,
+  PCT_DOS_THRU            ,
+  PCT_SERV_PROV_ID        ,
+  PCT_SERV_PROV_ID_TYP    ,
+  PCT_SERV_PROV_TYP       ,
+  PCT_SERV_PROV_SPEC      ,
+  PCT_BILL_PROV_SPEC      ,
+  PCT_BILL_PROV_ID        ,
+  PCT_BILL_PROV_ID_TYP    ,
+  PCT_PRESCRIBE_PROV_ID   ,
+  PCT_PRES_PROV_ID_TYP    ,
+  PCT_PRIMARY_DIAG        ,
+  PCT_ICD_VERSION         ,
+  PCT_PROC_CODE_O         ,
+  PCT_PROC_CODE_M         ,
+  PCT_PROC_MOD_DME        ,
+  PCT_PROC_MOD_LABXRAY    ,
+  PCT_PROC_MOD_SURGERYM   ,
+  PCT_QTY_UNIT_BILL       ,
+  PCT_MEDICARE_CODE       ,
+  PCT_AMT_GROSSPAY        ,
+  PCT_AMT_PAYMCARE        ,
+  PCT_SVC_CAT             ,
+  PCT_PAT_PAYAMT          ,
+  PCT_SCRIPT_WRITTEN      ,
+  PCT_REFILL              ,
+  PCT_DISPENSE            ,
+  PCT_SCRIPT              ,
+  PCT_FEE                 ,
+  PCT_NDC                 ,
+  PCT_CLAIMCAT            ,
+  PCT_RECIND              ,
+  PCT_AMTBILL             ,
+  PCT_AMTPAY              ,
+  PCT_AMTALLOW            ,
+  PCT_ADMITDT             ,
+  PCT_DISCHARGEDT         ,
+  PCT_DIAG_ADMIT          ,
+  PCT_PATIENT_STATUS      ,
+  PCT_ADMIT_TYPE          ,
+  PCT_ADMIT_SOURCE        ,
+  PCT_REV_CODE            ,
+  PCT_POS_CODE            ,
+  PCT_POS_TYPE            ,
+  PCT_SERV_NAM_LAST       ,
+  PCT_BILL_NAM_LAST       ,
+  PCT_SERV_ADR_STRT       ,
+  PCT_BILL_ADR_STRT       ,
+  PCT_SERV_ADR_CITY       ,
+  PCT_BILL_ADR_CITY       ,
+  PCT_SERV_ADR_STATE      ,
+  PCT_BILL_ADR_STATE      ,
+  PCT_SERV_ADR_ZIP        ,
+  PCT_BILL_ADR_ZIP        ,
+  PCT_SERV_ADR_MAIL_STRT  ,
+  PCT_BILL_ADR_MAIL_STRT  ,
+  PCT_SERV_ADR_MAIL_CITY  ,
+  PCT_BILL_ADR_MAIL_CITY  ,
+  PCT_SERV_ADR_MAIL_STATE ,
+  PCT_BILL_ADR_MAIL_STATE ,
+  PCT_SERV_ADR_MAIL_ZIP   ,
+  PCT_BILL_ADR_MAIL_ZIP   ,
+  PCT_SERV_PANEL_OPEN     ,
+  PCT_BILL_PANEL_OPEN     ,
+  PCT_SERV_NPI_SCO AS PCT_SERV_NPI            ,
+  PCT_BILL_NPI_SCO AS PCT_BILL_NPI            ,
+  PCT_SERV_TAX_ID         ,
+  PCT_BILL_TAX_ID         ,
+  PCT_SERV_PC_ELIG_IND    ,
+  PCT_BILL_PC_ELIG_IND    ,
+  PCT_SERV_APCD_ORGID     ,
+  PCT_BILL_APCD_ORGID     ,
+  PCT_SERV_PROV_BUNDLE_ID ,
+  PCT_BILL_PROV_BUNDLE_ID ,
+  PCT_SERV_IND_PRIM_ENC_PROV_LOC ,
+  PCT_BILL_IND_PRIM_ENC_PROV_LOC 
+
+from MHTEAM.DWDQ.INF_B_SC_STG_~PN~_PTPDOS
+) s
+unpivot (
+ actuals for MEAS in (
+  PCT_ID_MEDICAID         ,
+  PCT_DOS_FROM            ,
+  PCT_DOS_THRU            ,
+  PCT_SERV_PROV_ID        ,
+  PCT_SERV_PROV_ID_TYP    ,
+  PCT_SERV_PROV_TYP       ,
+  PCT_SERV_PROV_SPEC      ,
+  PCT_BILL_PROV_SPEC      ,
+  PCT_BILL_PROV_ID        ,
+  PCT_BILL_PROV_ID_TYP    ,
+  PCT_PRESCRIBE_PROV_ID   ,
+  PCT_PRES_PROV_ID_TYP    ,
+  PCT_PRIMARY_DIAG        ,
+  PCT_ICD_VERSION         ,
+  PCT_PROC_CODE_O         ,
+  PCT_PROC_CODE_M         ,
+  PCT_PROC_MOD_DME        ,
+  PCT_PROC_MOD_LABXRAY    ,
+  PCT_PROC_MOD_SURGERYM   ,
+  PCT_QTY_UNIT_BILL       ,
+  PCT_MEDICARE_CODE       ,
+  PCT_AMT_GROSSPAY        ,
+  PCT_AMT_PAYMCARE        ,
+  PCT_SVC_CAT             ,
+  PCT_PAT_PAYAMT          ,
+  PCT_SCRIPT_WRITTEN      ,
+  PCT_REFILL              ,
+  PCT_DISPENSE            ,
+  PCT_SCRIPT              ,
+  PCT_FEE                 ,
+  PCT_NDC                 ,
+  PCT_CLAIMCAT            ,
+  PCT_RECIND              ,
+  PCT_AMTBILL             ,
+  PCT_AMTPAY              ,
+  PCT_AMTALLOW            ,
+  PCT_ADMITDT             ,
+  PCT_DISCHARGEDT         ,
+  PCT_DIAG_ADMIT          ,
+  PCT_PATIENT_STATUS      ,
+  PCT_ADMIT_TYPE          ,
+  PCT_ADMIT_SOURCE        ,
+  PCT_REV_CODE            ,
+  PCT_POS_CODE            ,
+  PCT_POS_TYPE            ,
+  PCT_SERV_NAM_LAST       ,
+  PCT_BILL_NAM_LAST       ,
+  PCT_SERV_ADR_STRT       ,
+  PCT_BILL_ADR_STRT       ,
+  PCT_SERV_ADR_CITY       ,
+  PCT_BILL_ADR_CITY       ,
+  PCT_SERV_ADR_STATE      ,
+  PCT_BILL_ADR_STATE      ,
+  PCT_SERV_ADR_ZIP        ,
+  PCT_BILL_ADR_ZIP        ,
+  PCT_SERV_ADR_MAIL_STRT  ,
+  PCT_BILL_ADR_MAIL_STRT  ,
+  PCT_SERV_ADR_MAIL_CITY  ,
+  PCT_BILL_ADR_MAIL_CITY  ,
+  PCT_SERV_ADR_MAIL_STATE ,
+  PCT_BILL_ADR_MAIL_STATE ,
+  PCT_SERV_ADR_MAIL_ZIP   ,
+  PCT_BILL_ADR_MAIL_ZIP   ,
+  PCT_SERV_PANEL_OPEN     ,
+  PCT_BILL_PANEL_OPEN     ,
+  PCT_SERV_NPI            ,
+  PCT_BILL_NPI            ,
+  PCT_SERV_TAX_ID         ,
+  PCT_BILL_TAX_ID         ,
+  PCT_SERV_PC_ELIG_IND    ,
+  PCT_BILL_PC_ELIG_IND    ,
+  PCT_SERV_APCD_ORGID     ,
+  PCT_BILL_APCD_ORGID     ,
+  PCT_SERV_PROV_BUNDLE_ID ,
+  PCT_BILL_PROV_BUNDLE_ID ,
+  PCT_SERV_IND_PRIM_ENC_PROV_LOC ,
+  PCT_BILL_IND_PRIM_ENC_PROV_LOC 
+ ))
+order by
+CDE_ENC_MCO;
+
+insert into MHTEAM.DWDQ.INF_B_SC_STG_OC_TRANSPOSE2
+SELECT MEAS, 
+       "'CCI'" AS CCI, 
+       "'NWI'" AS NWI,
+       "'UCC'" AS UCC,
+       "'MGI'" AS MGI,
+       "'MHI'" AS MHI
+FROM (
+    SELECT * FROM MHTEAM.DWDQ.INF_B_SC_STG_OC_TRANSPOSE1
+    PIVOT
+    (
+        SUM(actuals)
+        FOR cde_enc_mco IN ('CCI','NWI','UCC','MGI','MHI')
+    )
+)
+ORDER BY meas;
+
+insert into MHTEAM.DWDQ.INF_B_SC_STG_~PN~_TRANSPOSE21
+select * from (
+select
+  CDE_ENC_MCO,
+  CAST(TOT_NONART AS NUMBER(15)) AS TOT_NONART,
+  CAST(TOT_INPAT AS NUMBER(15)) AS TOT_INPAT,
+  CAST(TOT_PHARM AS NUMBER(15)) AS TOT_PHARM,
+  CAST(TOT_OUTPT AS NUMBER(15)) AS TOT_OUTPT,
+  CAST(TOT_OUTPTQ2 AS NUMBER(15)) AS TOT_OUTPTQ2,
+  CAST(TOT_DENT AS NUMBER(15)) AS TOT_DENT,
+  CAST(TOT_DENTQ2 AS NUMBER(15)) AS TOT_DENTQ2,
+  CAST(TOT_MED AS NUMBER(15)) AS TOT_MED,
+  CAST(TOT_MEDQ2 AS NUMBER(15)) AS TOT_MEDQ2,
+  CAST(TOT_NON_PHRM_DENTQ2 AS NUMBER(15)) AS TOT_NON_PHRM_DENTQ2,
+  CAST(TOT_PHARM_SCRIPT AS NUMBER(15)) AS TOT_PHARM_SCRIPT,
+  CAST(TOT_NONPHARM AS NUMBER(15)) AS TOT_NONPHARM,
+  CAST(TOT_INPT_LTC AS NUMBER(15)) AS TOT_INPT_LTC,
+  CAST(TOT_INPT_OUTPT_LTC AS NUMBER(15)) AS TOT_INPT_OUTPT_LTC,
+  CAST(TOT_INP_OP_LTC_M_EXCQ2 AS NUMBER(15)) AS TOT_INP_OP_LTC_M_EXCQ2,
+  CAST(TOT_NON_PHRM_DENT AS NUMBER(15)) AS TOT_NON_PHRM_DENT,
+  CAST(TOT_INPAT_FILTER1 AS NUMBER(15)) AS TOT_INPAT_FILTER1,
+  CAST(TOT_INPAT_FILTER2 AS NUMBER(15)) AS TOT_INPAT_FILTER2,
+  CAST(TOT_INPTQ2 AS NUMBER(15)) AS TOT_INPTQ2,
+  CAST(TOT_MOD_DME AS NUMBER(15)) AS TOT_MOD_DME,
+  CAST(TOT_MOD_LABXRAY AS NUMBER(15)) AS TOT_MOD_LABXRAY,
+  CAST(TOT_MOD_SURGERYM AS NUMBER(15)) AS TOT_MOD_SURGERYM,
+  CAST(TOT_PHARMSCRIPT_NOTCOMP AS NUMBER(15)) AS TOT_PHARMSCRIPT_NOTCOMP,
+  CAST(TOT_INOUTLTC_NOART AS NUMBER(15)) AS TOT_INOUTLTC_NOART,
+  CAST(TOT_INPT_OUTPT AS NUMBER(15)) AS TOT_INPT_OUTPT,
+  CAST(TOT_RECORDS AS NUMBER(15)) AS TOT_REX
+from MHTEAM.DWDQ.INF_B_SC_STG_~PN~_PTPDOS
+) s
+unpivot (
+ claim_count for Meas in (
+  TOT_NONART              ,
+  TOT_INPAT               ,
+  TOT_PHARM               ,
+  TOT_OUTPT               ,
+  TOT_OUTPTQ2             ,
+  TOT_DENT                ,
+  TOT_DENTQ2              ,
+  TOT_MED                 ,
+  TOT_MEDQ2               ,
+  TOT_NON_PHRM_DENTQ2     ,
+  TOT_PHARM_SCRIPT        ,
+  TOT_NONPHARM            ,
+  TOT_INPT_LTC            ,
+  TOT_INPT_OUTPT_LTC      ,
+  TOT_INP_OP_LTC_M_EXCQ2  ,
+  TOT_NON_PHRM_DENT       ,
+  TOT_INPAT_FILTER1       ,
+  TOT_INPAT_FILTER2       ,
+  TOT_INPTQ2              ,
+  TOT_MOD_DME             ,
+  TOT_MOD_LABXRAY         ,
+  TOT_MOD_SURGERYM        ,
+  TOT_PHARMSCRIPT_NOTCOMP ,
+  TOT_INOUTLTC_NOART      ,
+  TOT_INPT_OUTPT          ,
+  TOT_REX
+ ))
+order by
+CDE_ENC_MCO;
+
+--truncate table MHTEAM.DWDQ.INF_B_SC_STG_OC_TRANSPOSE22
+
+insert into MHTEAM.DWDQ.INF_B_SC_STG_OC_TRANSPOSE22
+SELECT MEAS, 
+       "'CCI'" AS CCI, 
+       "'NWI'" AS NWI,
+       "'UCC'" AS UCC,
+       "'MGI'" AS MGI,
+       "'MHI'" AS MHI
+FROM (
+    SELECT * FROM MHTEAM.DWDQ.INF_B_SC_STG_OC_TRANSPOSE21
+    PIVOT
+    (
+        SUM(claim_count)
+        FOR cde_enc_mco IN ('CCI','NWI','UCC','MGI','MHI')
+    )
+)
+ORDER BY meas;
+
+--truncate table INF_B_SC_STG_SCO_REP_STEP1
+
+insert into MHTEAM.DWDQ.INF_B_SC_STG_OC_REP_STEP1
+select 
+case when meas='PCT_CLAIMCAT' then '2 Claim Category'
+     when meas='PCT_RECIND' then '4 Record Indicator'
+     when meas='PCT_DOS_FROM' then '17 From Service Date'
+     when meas='PCT_DOS_THRU' then '18 To Service Date'
+     when meas='PCT_PRIMARY_DIAG' then '19 Primary Diagnosis'
+     when meas='PCT_PROC_CODE_O' then '26 Procedure Code Outpt'
+     when meas='PCT_PROC_CODE_M' then '26 Procedure Code Prof_M'
+     /*when meas='PCT_PROC_CODE_I' then '26 Procedure Code Inpt'*/ /*removed from reporting*/
+     when meas='PCT_PROC_MOD_DME' then '27 Procedure Modifier DME'     
+     when meas='PCT_PROC_MOD_LABXRAY' then '27 Procedure Modifier LabXray'
+     when meas='PCT_PROC_MOD_SURGERYM' then '27 Procedure Modifier Surgery Prof_M'
+     when meas='PCT_QTY_UNIT_BILL' then '36 Quantity'
+     when meas='PCT_AMTPAY' then '68 Net Payment'
+     when meas='PCT_ID_MEDICAID' then '76 New Member ID'
+     when meas='PCT_MEDICARE_CODE' then '11 Medicare Code'
+     when meas='PCT_REV_CODE' then '31 Revenue Code'
+     when meas='PCT_POS_CODE' then '32 Place of Service'
+     when meas='PCT_POS_TYPE' then '33 Place of Service Type'
+     when meas='PCT_AMTBILL' then '60 Billed Charge'
+     when meas='PCT_AMT_GROSSPAY' then '61 Gross Payment Amount'
+     when meas='PCT_AMT_PAYMCARE' then '63 Medicare Amount'
+     when meas='PCT_SVC_CAT' then '80 Service Category'
+     when meas='PCT_AMTALLOW' then '86 Allowable Amount'
+     when meas='PCT_ICD_VERSION' then '193 ICD Version Qualifier'
+     when meas='PCT_ADMITDT' then '15 Admission Date'
+     when meas='PCT_DISCHARGEDT' then '16 Discharge Date'
+     when meas='PCT_ADMIT_TYPE' then '24    Type of Admission'
+     when meas='PCT_NDC' then '37 NDC Number' 
+     when meas='PCT_SERV_PROV_ID' then '50 Servicing Provider ID'
+     when meas='PCT_SERV_PROV_ID_TYP' then '51 Servicing Provider ID Type'
+     when meas='PCT_SERV_PROV_TYP' then '55 Servicing Provider Type'
+     when meas='PCT_SERV_PROV_SPEC' then '56 Servicing Provider Specialty'
+     when meas='PCT_BILL_PROV_ID' then '58 Billing Provider ID'
+     when meas='PCT_BILL_PROV_ID_TYP' then '93 Billing Provider ID Type'
+     when meas='PCT_BILL_PROV_SPEC' then ' Billing Provider Specialty'
+     when meas='PCT_PATIENT_STATUS' then '34 Patient Discharge Status'
+     when meas='PCT_DIAG_ADMIT' then '85 Admitting Diagnosis'
+     when meas='PCT_PAT_PAYAMT' then '124 Patient Pay Amount'
+     when meas='PCT_ADMIT_SOURCE' then '25 Source of Admission'
+     when meas='PCT_PRESCRIBE_PROV_ID' then '81 Prescribing Prov. ID'
+     when meas='PCT_PRES_PROV_ID_TYP' then '94 Prescribing Prov. ID Type'
+     when meas='PCT_REFILL' then '40 Refill Indicator'
+     when meas='PCT_DISPENSE' then '41 Dispense as Written Indicator'
+     when meas='PCT_FEE' then '67 Dispensing Fee'
+     when meas='PCT_SCRIPT_WRITTEN' then '82 Date Script Written'
+     when meas='PCT_SCRIPT' then '198 Prescription Number'
+     when meas='PCT_SERV_NAM_LAST' then '6 Servicing Provider Last Name'
+     when meas='PCT_BILL_NAM_LAST' then '6 Billing Provider Last Name'
+     when meas='PCT_SERV_ADR_STRT' then '8 Servicing Provider Street Address'
+     when meas='PCT_BILL_ADR_STRT' then '8 Billing Provider Street Address'
+     when meas='PCT_SERV_ADR_CITY' then '9 Servicing Provider City Address'
+     when meas='PCT_BILL_ADR_CITY' then '9 Billing Provider City Address'
+     when meas='PCT_SERV_ADR_STATE' then '10 Servicing Provider State Address'
+     when meas='PCT_BILL_ADR_STATE' then '10 Billing Provider State Address'
+     when meas='PCT_SERV_ADR_ZIP' then '11 Servicing Provider Zip Address'
+     when meas='PCT_BILL_ADR_ZIP' then '11 Billing Provider Zip Address'
+     when meas='PCT_SERV_ADR_MAIL_STRT' then '12 Servicing Provider Street Mailing Address'
+     when meas='PCT_BILL_ADR_MAIL_STRT' then '12 Billing Provider Street Mailing Address'
+     when meas='PCT_SERV_ADR_MAIL_CITY' then '13 Servicing Provider City Mailing Address'
+     when meas='PCT_BILL_ADR_MAIL_CITY' then '13 Billing Provider City Mailing Address'
+     when meas='PCT_SERV_ADR_MAIL_STATE' then '14 Servicing Provider State Mailing Address'
+     when meas='PCT_BILL_ADR_MAIL_STATE' then '14 Billing Provider State Mailing Address'
+     when meas='PCT_SERV_ADR_MAIL_ZIP' then '15 Servicing Provider Zip Mailing Address'
+     when meas='PCT_BILL_ADR_MAIL_ZIP' then '15 Billing Provider Zip Mailing Address'
+     when meas='PCT_SERV_PANEL_OPEN' then '23 Servicing Provider Accepting New Patients'
+     when meas='PCT_BILL_PANEL_OPEN' then '23 Billing Provider Accepting New Patients'
+     when meas='PCT_SERV_NPI' then '26 Servicing Provider NPI'
+     when meas='PCT_BILL_NPI' then '26 Billing Provider NPI'
+     when meas='PCT_SERV_TAX_ID' then '30 Servicing Tax ID'
+     when meas='PCT_BILL_TAX_ID' then '30 Billing Tax ID'
+     when meas='PCT_SERV_PC_ELIG_IND' then '33 Servicing Provider Primary Care Eligibility Ind'
+     when meas='PCT_BILL_PC_ELIG_IND' then '33 Billing Provider Primary Care Eligibility Ind'
+     when meas='PCT_SERV_APCD_ORGID' then '34 Servicing Provider APCD Organization ID'
+     when meas='PCT_BILL_APCD_ORGID' then '34 Billing Provider APCD Organization ID'
+     when meas='PCT_SERV_PROV_BUNDLE_ID' then '40 Servicing Provider Bundle ID'
+     when meas='PCT_BILL_PROV_BUNDLE_ID' then '40 Billing Provider Bundle ID' 
+     when meas='PCT_SERV_IND_PRIM_ENC_PROV_LOC' then '41 Servicing Provider Primary Address Location Indicator'
+     when meas='PCT_BILL_IND_PRIM_ENC_PROV_LOC' then '41 Billing Provider Primary Address Location Indicator'
+end as meas,
+case when meas='PCT_ID_MEDICAID' or meas ='PCT_DOS_FROM' or meas ='PCT_DOS_THRU' or 
+          meas='PCT_SERV_PROV_ID' or meas ='PCT_SERV_PROV_ID_TYP' or meas ='PCT_SERV_PROV_TYP' or
+          meas='PCT_SERV_PROV_SPEC' or meas ='PCT_BILL_PROV_ID' or meas ='PCT_BILL_PROV_ID_TYP' or  
+          meas='PCT_BILL_PROV_SPEC' or meas='PCT_MEDICARE_CODE' or
+          meas='PCT_AMT_GROSSPAY' or meas='PCT_AMT_PAYMCARE' or meas='PCT_SVC_CAT' or
+          meas='PCT_PAT_PAYAMT' or meas='PCT_CLAIMCAT' or meas='PCT_RECIND' or meas='PCT_AMTBILL' or 
+          meas='PCT_AMTPAY' or meas='PCT_AMTALLOW' or meas='PCT_SERV_NAM_LAST' or meas='PCT_BILL_NAM_LAST' or
+          meas='PCT_SERV_ADR_STRT' or meas='PCT_BILL_ADR_STRT' or meas='PCT_SERV_ADR_CITY' or
+          meas='PCT_BILL_ADR_CITY' or meas='PCT_SERV_ADR_STATE' or meas='PCT_BILL_ADR_STATE' or 
+          meas='PCT_SERV_ADR_ZIP' or meas='PCT_BILL_ADR_ZIP' or meas='PCT_SERV_ADR_MAIL_STRT' or
+          meas='PCT_BILL_ADR_MAIL_STRT' or meas='PCT_SERV_ADR_MAIL_CITY' or meas='PCT_BILL_ADR_MAIL_CITY' or
+          meas='PCT_SERV_ADR_MAIL_STATE' or meas='PCT_BILL_ADR_MAIL_STATE' or meas='PCT_SERV_ADR_MAIL_ZIP' or
+          meas='PCT_BILL_ADR_MAIL_ZIP' or meas='PCT_SERV_PANEL_OPEN' or meas='PCT_BILL_PANEL_OPEN' or
+          meas='PCT_SERV_NPI' or meas='PCT_BILL_NPI' or meas='PCT_SERV_TAX_ID' or meas='PCT_BILL_TAX_ID' or
+          meas='PCT_SERV_TAX_ID' or meas='PCT_BILL_TAX_ID' or meas='PCT_SERV_PC_ELIG_IND' or 
+          meas='PCT_BILL_PC_ELIG_IND' or meas='PCT_SERV_APCD_ORGID' or meas='PCT_BILL_APCD_ORGID' or
+          meas='PCT_SERV_PROV_BUNDLE_ID' or meas='PCT_BILL_PROV_BUNDLE_ID' or meas='PCT_SERV_IND_PRIM_ENC_PROV_LOC' or
+          meas='PCT_BILL_IND_PRIM_ENC_PROV_LOC'
+     then 'All Claim Types' 
+     when meas='PCT_QTY_UNIT_BILL' then 'Non-Pharmacy Claims' /*updated 6.28.18*/
+     when meas='PCT_PRESCRIBE_PROV_ID' or meas='PCT_PRES_PROV_ID_TYP' or meas='PCT_SCRIPT_WRITTEN' or
+          meas='PCT_REFILL' or meas='PCT_DISPENSE' or meas='PCT_SCRIPT' or meas='PCT_FEE' 
+     then 'Pharmacy (prescriptions only, not OTC)'
+     when meas='PCT_NDC' then 'Pharmacy (prescriptions only, not OTC and not compounded)'
+     when meas='PCT_PRIMARY_DIAG' or meas='PCT_ICD_VERSION' then 'Inpatient, Outpatient, Professional, and LTC'
+     when meas='PCT_PROC_CODE_O' then 'Outpatient' 
+     when meas='PCT_PROC_CODE_M' or meas='PCT_PROC_MOD_LABXRAY' or meas='PCT_PROC_MOD_SURGERYM' then 'Professional'
+     when meas='PCT_PROC_MOD_DME' then 'Professional (modifier=DME)'
+     when meas='PCT_ADMITDT' or meas='PCT_ADMIT_TYPE' or meas='PCT_ADMIT_SOURCE' then 'Inpatient and LTC'
+     when meas='PCT_DISCHARGEDT' or meas='PCT_DIAG_ADMIT' then 'Inpatient'
+     when meas='PCT_PATIENT_STATUS' then 'Inpatient and Outpatient'
+     when meas='PCT_REV_CODE' then 'Inpatient, Outpatient, and LTC'
+     when meas='PCT_POS_CODE' or meas='PCT_POS_TYPE' then 'Inpatient, Outpatient, Professional, and LTC'
+end as claimtype,
+case when meas in('PCT_ID_MEDICAID','PCT_DOS_FROM','PCT_DOS_THRU','PCT_SERV_PROV_ID','PCT_SERV_PROV_ID_TYP',
+                      'PCT_SERV_PROV_TYP','PCT_BILL_PROV_ID','PCT_BILL_PROV_ID_TYP','PCT_PRESCRIBE_PROV_ID',
+                      'PCT_PRES_PROV_ID_TYP','PCT_PRIMARY_DIAG','PCT_ICD_VERSION','PCT_QTY_UNIT_BILL', 
+                      'PCT_MEDICARE_CODE','PCT_AMT_GROSSPAY','PCT_AMT_PAYMCARE','PCT_SVC_CAT','PCT_PAT_PAYAMT',
+                      'PCT_SCRIPT_WRITTEN','PCT_REFILL','PCT_SCRIPT','PCT_FEE','PCT_NDC',
+                      'PCT_CLAIMCAT','PCT_RECIND','PCT_AMTBILL','PCT_AMTPAY','PCT_AMTALLOW','PCT_ADMITDT','PCT_DISCHARGEDT',
+                      'PCT_DIAG_ADMIT','PCT_PATIENT_STATUS','PCT_ADMIT_TYPE','PCT_ADMIT_SOURCE','PCT_REV_CODE',
+                      'PCT_POS_CODE','PCT_POS_TYPE','PCT_SERV_TAX_ID','PCT_BILL_TAX_ID','PCT_SERV_NPI','PCT_BILL_NPI')  
+     then '98.0%'
+     when meas in('PCT_DISPENSE','PCT_PROC_CODE_O','PCT_PROC_CODE_M','PCT_PROC_MOD_DME','PCT_PROC_MOD_LABXRAY',
+                     'PCT_SERV_NAM_LAST','PCT_BILL_NAM_LAST','PCT_SERV_ADR_STRT','PCT_BILL_ADR_STRT',
+                     'PCT_SERV_ADR_CITY','PCT_BILL_ADR_CITY','PCT_SERV_ADR_STATE','PCT_BILL_ADR_STATE',
+                     'PCT_SERV_ADR_ZIP','PCT_BILL_ADR_ZIP','PCT_SERV_ADR_MAIL_STRT','PCT_BILL_ADR_MAIL_STRT',
+                     'PCT_SERV_ADR_MAIL_CITY','PCT_BILL_ADR_MAIL_CITY','PCT_SERV_ADR_MAIL_STATE','PCT_BILL_ADR_MAIL_STATE',
+                     'PCT_SERV_ADR_MAIL_ZIP','PCT_BILL_ADR_MAIL_ZIP','PCT_SERV_PANEL_OPEN','PCT_BILL_PANEL_OPEN',
+                     'PCT_SERV_PC_ELIG_IND','PCT_BILL_PC_ELIG_IND') then '95.0%'
+     when meas in('PCT_PROC_MOD_SURGERYM') then '25.0%'
+     when meas in('PCT_SERV_PROV_SPEC','PCT_BILL_PROV_SPEC','PCT_SERV_APCD_ORGID','PCT_BILL_APCD_ORGID',
+                     'PCT_SERV_PROV_BUNDLE_ID','PCT_BILL_PROV_BUNDLE_ID','PCT_SERV_IND_PRIM_ENC_PROV_LOC',
+                     'PCT_BILL_IND_PRIM_ENC_PROV_LOC') then '50.0%'
+end as benchmark,
+case when meas='PCT_ID_MEDICAID' or meas ='PCT_DOS_FROM' or meas ='PCT_DOS_THRU' or 
+          meas='PCT_SERV_PROV_ID' or meas ='PCT_SERV_PROV_ID_TYP' or meas ='PCT_SERV_PROV_TYP' or
+          meas='PCT_SERV_PROV_SPEC' or meas ='PCT_BILL_PROV_SPEC' or meas ='PCT_BILL_PROV_ID' or meas ='PCT_BILL_PROV_ID_TYP' or  
+          meas='PCT_MEDICARE_CODE' or meas='PCT_AMT_GROSSPAY' or 
+          meas='PCT_AMT_PAYMCARE' or meas='PCT_SVC_CAT' or meas='PCT_PAT_PAYAMT' or meas='PCT_CLAIMCAT' or
+          meas='PCT_RECIND' or meas='PCT_AMTBILL' or meas='PCT_AMTPAY' or meas='PCT_AMTALLOW' or
+          meas='PCT_SERV_NAM_LAST' or meas='PCT_BILL_NAM_LAST' or
+          meas='PCT_SERV_ADR_STRT' or meas='PCT_BILL_ADR_STRT' or meas='PCT_SERV_ADR_CITY' or
+          meas='PCT_BILL_ADR_CITY' or meas='PCT_SERV_ADR_STATE' or meas='PCT_BILL_ADR_STATE' or 
+          meas='PCT_SERV_ADR_ZIP' or meas='PCT_BILL_ADR_ZIP' or meas='PCT_SERV_ADR_MAIL_STRT' or
+          meas='PCT_BILL_ADR_MAIL_STRT' or meas='PCT_SERV_ADR_MAIL_CITY' or meas='PCT_BILL_ADR_MAIL_CITY' or
+          meas='PCT_SERV_ADR_MAIL_STATE' or meas='PCT_BILL_ADR_MAIL_STATE' or meas='PCT_SERV_ADR_MAIL_ZIP' or
+          meas='PCT_BILL_ADR_MAIL_ZIP' or meas='PCT_SERV_PANEL_OPEN' or meas='PCT_BILL_PANEL_OPEN' or
+          meas='PCT_SERV_NPI' or meas='PCT_BILL_NPI' or meas='PCT_SERV_TAX_ID' or meas='PCT_BILL_TAX_ID' or
+          meas='PCT_SERV_TAX_ID' or meas='PCT_BILL_TAX_ID' or meas='PCT_SERV_PC_ELIG_IND' or 
+          meas='PCT_BILL_PC_ELIG_IND' or meas='PCT_SERV_APCD_ORGID' or meas='PCT_BILL_APCD_ORGID' or
+          meas='PCT_SERV_PROV_BUNDLE_ID' or meas='PCT_BILL_PROV_BUNDLE_ID' or 
+          meas='PCT_SERV_IND_PRIM_ENC_PROV_LOC' or meas='PCT_BILL_IND_PRIM_ENC_PROV_LOC'
+then 'TOT_REX'
+when meas='PCT_QTY_UNIT_BILL' then 'TOT_NONPHARM' /*updated 6.28.18*/
+when meas='PCT_PRESCRIBE_PROV_ID' or meas='PCT_PRES_PROV_ID_TYP' or meas='PCT_SCRIPT_WRITTEN' or
+     meas='PCT_REFILL' or meas='PCT_DISPENSE' or meas='PCT_SCRIPT' or meas='PCT_FEE' then 'TOT_PHARM_SCRIPT'
+when meas='PCT_NDC' then 'TOT_PHARMSCRIPT_NOTCOMP'
+when meas='PCT_PRIMARY_DIAG' then 'TOT_NON_PHRM_DENTQ2'
+when meas='PCT_ADMITDT' or meas='PCT_ADMIT_TYPE' or meas='PCT_ADMIT_SOURCE' then 'TOT_INPT_LTC'
+when meas='PCT_PRIMARY_DIAG' then 'TOT_NON_PHRM_DENTQ2'
+when meas='PCT_ICD_VERSION' then 'TOT_INP_OP_LTC_M_EXCQ2'
+when meas='PCT_PROC_CODE_M' then 'TOT_MEDQ2'
+when meas='PCT_PROC_CODE_O' then 'TOT_OUTPTQ2'
+when meas='PCT_PROC_CODE_I' then 'TOT_INPTQ2'
+when meas='PCT_PROC_MOD_DME' then 'TOT_MOD_DME'
+when meas='PCT_PROC_MOD_LABXRAY' then 'TOT_MOD_LABXRAY'
+when meas='PCT_PROC_MOD_SURGERYM' then 'TOT_MOD_SURGERYM'
+when meas='PCT_POS_CODE' or meas='PCT_POS_TYPE' then 'TOT_NON_PHRM_DENT'
+when meas='PCT_REV_CODE' then 'TOT_INOUTLTC_NOART'
+when meas='PCT_PATIENT_STATUS' then 'TOT_INPT_OUTPT'
+when meas='PCT_DIAG_ADMIT' then 'TOT_INPAT_FILTER2'
+when meas='PCT_DISCHARGEDT' then 'TOT_INPAT_FILTER1'
+end as claim_count,
+case when meas='PCT_CLAIMCAT' then 8
+     when meas='PCT_RECIND' then 26
+     when meas='PCT_DOS_FROM' then 13
+     when meas='PCT_DOS_THRU' then 35
+     when meas='PCT_PRIMARY_DIAG' then 23
+     when meas='PCT_PROC_CODE_O' then 40
+     when meas='PCT_PROC_CODE_M' then 24
+     when meas='PCT_PROC_MOD_DME' then 41     
+     when meas='PCT_PROC_MOD_LABXRAY' then 42
+     when meas='PCT_PROC_MOD_SURGERYM' then 43
+     when meas='PCT_QTY_UNIT_BILL' then 25
+     when meas='PCT_AMTPAY' then 16
+     when meas='PCT_ID_MEDICAID' then 17
+     when meas='PCT_MEDICARE_CODE' then 44
+     when meas='PCT_REV_CODE' then 28
+     when meas='PCT_POS_CODE' then 19
+     when meas='PCT_POS_TYPE' then 37
+     when meas='PCT_AMTBILL' then 4
+     when meas='PCT_AMT_GROSSPAY' then 45
+     when meas='PCT_AMT_PAYMCARE' then 7
+     when meas='PCT_SVC_CAT' then 29
+     when meas='PCT_AMTALLOW' then 3
+     when meas='PCT_ICD_VERSION' then 14
+     when meas='PCT_ADMITDT' then 1
+     when meas='PCT_DISCHARGEDT' then 10
+     when meas='PCT_ADMIT_TYPE' then 36
+     when meas='PCT_NDC' then 15
+     when meas='PCT_SERV_PROV_ID' then 31
+     when meas='PCT_SERV_PROV_ID_TYP' then 32
+     when meas='PCT_SERV_PROV_TYP' then 33
+     when meas='PCT_SERV_PROV_SPEC' then 38
+     when meas='PCT_BILL_PROV_ID' then 5
+     when meas='PCT_BILL_PROV_ID_TYP' then 6
+     when meas='PCT_BILL_PROV_SPEC' then 39
+     when meas='PCT_PATIENT_STATUS' then 18
+     when meas='PCT_DIAG_ADMIT' then 2
+     when meas='PCT_PAT_PAYAMT' then 30
+     when meas='PCT_ADMIT_SOURCE' then 34
+     when meas='PCT_PRESCRIBE_PROV_ID' then 20
+     when meas='PCT_PRES_PROV_ID_TYP' then 21
+     when meas='PCT_REFILL' then 27
+     when meas='PCT_DISPENSE' then 11
+     when meas='PCT_FEE' then 12
+     when meas='PCT_SCRIPT_WRITTEN' then 9
+     when meas='PCT_SCRIPT' then 22
+     when meas='PCT_SERV_NAM_LAST' then 46
+     when meas='PCT_BILL_NAM_LAST' then 47
+     when meas='PCT_SERV_ADR_STRT' then 48
+     when meas='PCT_BILL_ADR_STRT' then 49
+     when meas='PCT_SERV_ADR_CITY' then 50
+     when meas='PCT_BILL_ADR_CITY' then 51
+     when meas='PCT_SERV_ADR_STATE' then 52
+     when meas='PCT_BILL_ADR_STATE' then 53
+     when meas='PCT_SERV_ADR_ZIP' then 54
+     when meas='PCT_BILL_ADR_ZIP' then 55
+     when meas='PCT_SERV_ADR_MAIL_STRT' then 56
+     when meas='PCT_BILL_ADR_MAIL_STRT' then 57
+     when meas='PCT_SERV_ADR_MAIL_CITY' then 58
+     when meas='PCT_BILL_ADR_MAIL_CITY' then 59
+     when meas='PCT_SERV_ADR_MAIL_STATE' then 60
+     when meas='PCT_BILL_ADR_MAIL_STATE' then 61
+     when meas='PCT_SERV_ADR_MAIL_ZIP' then 62
+     when meas='PCT_BILL_ADR_MAIL_ZIP' then 63
+     when meas='PCT_SERV_PANEL_OPEN' then 64
+     when meas='PCT_BILL_PANEL_OPEN' then 65
+     when meas='PCT_SERV_NPI' then 66
+     when meas='PCT_BILL_NPI' then 67
+     when meas='PCT_SERV_TAX_ID' then 68
+     when meas='PCT_BILL_TAX_ID' then 69
+     when meas='PCT_SERV_PC_ELIG_IND' then 70
+     when meas='PCT_BILL_PC_ELIG_IND' then 71
+     when meas='PCT_SERV_APCD_ORGID' then 72
+     when meas='PCT_BILL_APCD_ORGID' then 73
+     when meas='PCT_SERV_PROV_BUNDLE_ID' then 74
+     when meas='PCT_BILL_PROV_BUNDLE_ID' then 75 
+     when meas='PCT_SERV_IND_PRIM_ENC_PROV_LOC' then 76
+     when meas='PCT_BILL_IND_PRIM_ENC_PROV_LOC' then 77
+end as id,
+CCI, NWI, UCC, MGI, MHI
+from MHTEAM.DWDQ.INF_B_SC_STG_OC_TRANSPOSE2;
+
+
+--truncate table MHTEAM.DWDQ.INF_B_SC_STG_SCO_REP_STEP2
+
+insert into MHTEAM.DWDQ.INF_B_SC_STG_OC_REP_STEP2
+select 
+to_date('~ASOFDT~','YYYYMMDD') as RUN_DATE,
+rp1.meas as MEASURE,
+rp1.claimtype,
+rp1.benchmark,
+rp1.id,
+rp1.cci,rp2.cci  as cci_denom,
+rp1.nwi,rp2.nwi  as nwi_denom, 
+rp1.ucc,rp2.ucc  as ucc_denom,
+rp1.mgi,rp2.mgi  as mgi_denom,
+rp1.mhi,rp2.mhi  as mhi_denom
+from MHTEAM.DWDQ.INF_B_SC_STG_OC_REP_STEP1 rp1 
+inner join MHTEAM.DWDQ.INF_B_SC_STG_OC_TRANSPOSE22 rp2 
+on rp1.claim_count=rp2.claim_count
+ORDER BY MEAS, CLAIMTYPE;
+
+----
+
+-- MAP_INF_B_SC_OC_STEP2_TO_STG_OC_STEP2
 
 insert into MHTEAM.DWDQ.INF_B_SC_STG_OC_REP_STEP2
 (
@@ -1328,7 +1885,11 @@ ID,
   NWI,
   NWI_DENOM,
   UCC,
-  UCC_DENOM
+  UCC_DENOM,
+  MGI,
+  MGI_DENOM,
+  MHI,
+  MHI_DENOM
 )
 select
 TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE,
@@ -1420,8 +1981,13 @@ end as id,
   NWI,
   NWI_DENOM,
   UCC,
-  UCC_DENOM
+  UCC_DENOM,
+  MGI,
+  MGI_DENOM,
+  MHI,
+  MHI_DENOM 
 from MHTEAM.DWDQ.INF_B_SC_OC_REP_STEP2_~MON~;
+
 
 -- FAILS
 
@@ -5113,7 +5679,7 @@ INSERT INTO MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
          AND TO_DATE('~ASOFDT~','YYYYMMDD') BETWEEN ENC.WH_FROM_DT AND ENC.WH_THRU_DT 
          AND ENC.CDE_CLM_DISPOSITION <> 'V' 
          AND ENC.IND_OFFSET = 'N' 
-         AND ENC.CDE_ENC_MCO IN ('CCI','NWI','UCC');
+         AND ENC.CDE_ENC_MCO IN ('CCI','NWI','UCC','MGI','MHI' );
 
  --TRUNCATE TABLE INF_B_SC_STG_OC_PROVIDER_MISSING_IDS;
 
@@ -5126,7 +5692,7 @@ from(
 select RUN_DATE, CDE_ENC_MCO, ENC_SERV_PROV_ID, ODSENC_SEQ
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
 where ENC_SERV_PROV_ID IN (' ','-','+','#') 
-and cde_enc_mco in ('CCI','NWI','UCC')    
+and cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI')    
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 )ds1 inner join
 (select cde_enc_mco,claim_number,odsenc_seq,servicing_provider_id ods_servicing_id,servicing_provider_id_type ods_servicing_typ
@@ -5140,7 +5706,7 @@ from(
 select RUN_DATE, CDE_ENC_MCO, ENC_BILL_PROV_ID, ODSENC_SEQ
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
 where ENC_BILL_PROV_ID IN (' ','-','+','#') 
-and cde_enc_mco in ('CCI','NWI','UCC')    
+and cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI')    
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 )ds1 inner join
 (select cde_enc_mco,claim_number,odsenc_seq,billing_provider_id ods_billing_id,billing_provider_id_type ods_billing_typ
@@ -5155,7 +5721,7 @@ select RUN_DATE, CDE_ENC_MCO, ENC_PRES_PROV_ID, ODSENC_SEQ
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
 where ENC_PRES_PROV_ID IN (' ','-','+','#') 
 --and cde_enc_mco='BHP' 
-and cde_enc_mco in ('CCI','NWI','UCC')    
+and cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI')    
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 and CLAIM_TYPE = 'P' AND CDE_DRUG_CLASS='F'
 )ds1 inner join
@@ -5250,7 +5816,7 @@ select r1, c1, val1, val2, r3, c3, val3, val4
 from (
 select run_date r1, cde_enc_mco c1,count(*)val1, count(*) val2 --,count(distinct enc_claim_no)--,count(distinct enc_claim_no||enc_claim_suffix)
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
-where cde_enc_mco in ('CCI','NWI','UCC') 
+where cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI') 
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 group by run_date, cde_enc_mco
 ) v1 JOIN
@@ -5263,7 +5829,7 @@ case when ods_billing_id not in ('+','-',' ') then 1 else 0 end as ods_bill
 from(
 select cy19.*
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER cy19
-where cde_enc_mco in ('CCI','NWI','UCC') 
+where cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI') 
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 )ds1 inner join
 (select cde_enc_mco,claim_number,odsenc_seq,servicing_provider_id ods_servicing_id,servicing_provider_id_type ods_servicing_typ,
@@ -5281,7 +5847,7 @@ from (
 select run_date r5, cde_enc_mco c5 ,count(*) val5--,count(distinct enc_claim_no)--,count(distinct enc_claim_no||enc_claim_suffix)
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
 where ENC_SERV_PROV_ID NOT IN (' ','-','+','#') 
-AND cde_enc_mco in ('CCI','NWI','UCC') 
+AND cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI') 
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 group by run_date, cde_enc_mco
 ) v5 JOIN
@@ -5289,7 +5855,7 @@ group by run_date, cde_enc_mco
 select run_date r6, cde_enc_mco c6,count(*) val6--,count(distinct enc_claim_no)--,count(distinct enc_claim_no||enc_claim_suffix)
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
 where ENC_BILL_PROV_ID NOT IN (' ','-','+','#') 
-AND cde_enc_mco in ('CCI','NWI','UCC') 
+AND cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI') 
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 group by run_date, cde_enc_mco
 --we don't know if these claims are missing servicing provider claim info on the claim or if they have this info the claim, but it was not present
@@ -5313,12 +5879,16 @@ select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'CCI' AS CDE_ENC_MCO from DUA
 UNION 
 select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'NWI' AS CDE_ENC_MCO from DUAL 
 UNION 
-select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'UCC' AS CDE_ENC_MCO from DUAL 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'UCC' AS CDE_ENC_MCO from DUAL
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MGI' AS CDE_ENC_MCO from DUAL
+UNION
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MHI' AS CDE_ENC_MCO from DUAL
 ) S1 LEFT JOIN
 (
 select run_date r7, cde_enc_mco c7,count(*) val7--,count(distinct enc_claim_no)--,count(distinct enc_claim_no||enc_claim_suffix)
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
-where cde_enc_mco in ('CCI','NWI','UCC') 
+where cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI') 
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 and CLAIM_TYPE = 'P' AND CDE_DRUG_CLASS='F'
 group by run_date, cde_enc_mco
@@ -5333,7 +5903,11 @@ select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'CCI' AS CDE_ENC_MCO from DUA
 UNION 
 select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'NWI' AS CDE_ENC_MCO from DUAL 
 UNION 
-select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'UCC' AS CDE_ENC_MCO from DUAL 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'UCC' AS CDE_ENC_MCO from DUAL
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MGI' AS CDE_ENC_MCO from DUAL 
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MHI' AS CDE_ENC_MCO from DUAL 
 ) S1 LEFT JOIN
 (
 select run_date r8, cde_enc_mco c8,sum(ods_prescrib) val8
@@ -5342,7 +5916,7 @@ from
 from(
 select cy19.*
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER cy19
-where cde_enc_mco in ('CCI','NWI','UCC') 
+where cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI') 
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 and CLAIM_TYPE = 'P' AND CDE_DRUG_CLASS='F'
 )ds1 inner join
@@ -5360,12 +5934,16 @@ UNION
 select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'NWI' AS CDE_ENC_MCO from DUAL 
 UNION 
 select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'UCC' AS CDE_ENC_MCO from DUAL 
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MGI' AS CDE_ENC_MCO from DUAL 
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MHI' AS CDE_ENC_MCO from DUAL 
 ) S1 LEFT JOIN
 (
 select run_date r9, cde_enc_mco c9,count(*) val9--,count(distinct enc_claim_no)--,count(distinct enc_claim_no||enc_claim_suffix)
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
 where ENC_PRES_PROV_ID NOT IN (' ','-','+','#') 
-AND cde_enc_mco in ('CCI','NWI','UCC') 
+AND cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI') 
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 and CLAIM_TYPE = 'P' AND CDE_DRUG_CLASS='F'
 group by run_date, cde_enc_mco
@@ -5384,6 +5962,10 @@ UNION
 select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'NWI' AS CDE_ENC_MCO from DUAL 
 UNION 
 select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'UCC' AS CDE_ENC_MCO from DUAL 
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MGI' AS CDE_ENC_MCO from DUAL 
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MHI' AS CDE_ENC_MCO from DUAL 
 ) S1 LEFT JOIN
 (
 select r16, c16, count(ods_servicing_id) val16 from (
@@ -5394,7 +5976,7 @@ from(
 select *
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
 where ENC_SERV_PROV_ID IN (' ','-','+','#') 
-AND cde_enc_mco in ('CCI','NWI','UCC') 
+AND cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI') 
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 )ds1 inner join
 (select cde_enc_mco,claim_number,odsenc_seq,servicing_provider_id ods_servicing_id,servicing_provider_id_type ods_servicing_typ
@@ -5412,6 +5994,10 @@ UNION
 select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'NWI' AS CDE_ENC_MCO from DUAL 
 UNION 
 select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'UCC' AS CDE_ENC_MCO from DUAL 
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MGI' AS CDE_ENC_MCO from DUAL 
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MHI' AS CDE_ENC_MCO from DUAL 
 ) S1 LEFT JOIN
 (
 select r17, c17, count(ods_billing_id) val17 from (
@@ -5421,7 +6007,7 @@ from(
 select *
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
 where ENC_BILL_PROV_ID IN (' ','-','+','#') 
-and cde_enc_mco in ('CCI','NWI','UCC')
+and cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI')
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 )ds1 inner join
 (select cde_enc_mco,claim_number,odsenc_seq,billing_provider_id ods_billing_id,billing_provider_id_type ods_billing_typ
@@ -5440,6 +6026,10 @@ UNION
 select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'NWI' AS CDE_ENC_MCO from DUAL 
 UNION 
 select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'UCC' AS CDE_ENC_MCO from DUAL 
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MGI' AS CDE_ENC_MCO from DUAL 
+UNION 
+select TO_DATE('~ASOFDT~','YYYYMMDD') AS RUN_DATE, 'MHI' AS CDE_ENC_MCO from DUAL 
 ) S1 LEFT JOIN
 (
 select r18, c18, count(ods_prescribing_id) val18 from (
@@ -5450,7 +6040,7 @@ from(
 select *
 from MHTEAM.DWDQ.INF_B_SC_STG_OC_PROVIDER
 where ENC_PRES_PROV_ID IN (' ','-','+','#') 
-and cde_enc_mco in ('CCI','NWI','UCC')    
+and cde_enc_mco in ('CCI','NWI','UCC','MGI','MHI')    
 AND RUN_DATE = TO_DATE('~ASOFDT~','YYYYMMDD')    
 and CLAIM_TYPE = 'P' AND CDE_DRUG_CLASS='F'
 )ds1 inner join
